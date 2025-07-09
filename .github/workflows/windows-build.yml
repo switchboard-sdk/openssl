@@ -45,7 +45,7 @@ jobs:
     - name: config
       working-directory: _build
       run: |
-        perl ..\Configure ${{ matrix.platform.target }} --banner=Configured --strict-warnings no-makedepend --prefix="${{ github.workspace }}\openssl-install\${{ matrix.platform.arch }}" CFLAGS="-std=gnu17" CXXFLAGS="-std=gnu17" no-shared ${{ matrix.platform.config }}
+        perl ..\Configure ${{ matrix.platform.target }} --banner=Configured --strict-warnings no-makedepend --prefix="${{ github.workspace }}\openssl-install\${{ matrix.platform.arch }}" -std=gnu17 no-shared ${{ matrix.platform.config }}
         perl configdata.pm --dump
     - name: build
       working-directory: _build
@@ -97,7 +97,7 @@ jobs:
     - name: config
       working-directory: _build
       run: |
-        ../Configure ${{ matrix.platform.target }} --banner=Configured --strict-warnings --prefix="${{ github.workspace }}/openssl-install/${{ matrix.platform.arch }}" CFLAGS="-std=gnu17" CXXFLAGS="-std=gnu17" no-shared enable-fips
+        ../Configure ${{ matrix.platform.target }} --banner=Configured --strict-warnings --prefix="${{ github.workspace }}/openssl-install/${{ matrix.platform.arch }}" -std=gnu17 no-shared enable-fips
         perl configdata.pm --dump
     - name: build
       working-directory: _build
