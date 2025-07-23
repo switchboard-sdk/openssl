@@ -77,20 +77,15 @@ jobs:
             mingw: mingw32
             target: mingw
     runs-on: windows-2022
-    defaults:
-      run:
-        shell: msys2 {0}
     steps:
     - uses: actions/checkout@v4
-    - uses: msys2/setup-msys2@v2
+    - name: Setup Visual Studio Environment
+      uses: ilammy/msvc-dev-cmd@v1
       with:
-        msystem: ${{ matrix.platform.mingw }}
-        install: >-
-          git
-          make
-          mingw-w64-x86_64-gcc
-          mingw-w64-x86_64-perl
-          mingw-w64-x86_64-nasm
+        arch: ${{ matrix.platform.arch }}
+    - name: Install Perl (for OpenSSL)
+      run: |
+        choco install strawberryperl
     - name: checkout fuzz/corpora submodule
       run: git submodule update --init --depth 1 fuzz/corpora
     - name: prepare the build directory
@@ -102,13 +97,13 @@ jobs:
         perl configdata.pm --dump
     - name: build
       working-directory: _build
-      run: make -j4
+      run: nmake
     - name: test
       working-directory: _build
-      run: make test HARNESS_JOBS=4
+      run: nmake test HARNESS_JOBS=4
     - name: install
       working-directory: _build
-      run: make install
+      run: nmake install
     - name: package artifacts
       run: |
         7z a openssl-windows-mingw-${{ matrix.platform.arch }}.zip "${{ github.workspace }}/openssl-install/${{ matrix.platform.arch }}/*"
