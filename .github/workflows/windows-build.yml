@@ -88,8 +88,8 @@ jobs:
         install: >-
           git
           make
-          ${{ matrix.platform.mingw }}-cc
-          ${{ matrix.platform.mingw }}-perl
+          mingw-w64-${{ matrix.platform.arch == 'x64' && 'x86_64' || 'i686' }}-gcc
+          mingw-w64-${{ matrix.platform.arch == 'x64' && 'x86_64' || 'i686' }}-perl
     - name: checkout fuzz/corpora submodule
       run: git submodule update --init --depth 1 fuzz/corpora
     - name: prepare the build directory
