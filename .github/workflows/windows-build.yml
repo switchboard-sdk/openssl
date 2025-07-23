@@ -82,8 +82,6 @@ jobs:
         shell: msys2 {0}
     steps:
     - uses: actions/checkout@v4
-    - name: checkout fuzz/corpora submodule
-      run: git submodule update --init --depth 1 fuzz/corpora
     - uses: msys2/setup-msys2@v2
       with:
         msystem: ${{ matrix.platform.mingw }}
@@ -92,6 +90,8 @@ jobs:
           make
           ${{ matrix.platform.mingw }}-toolchain
           ${{ matrix.platform.mingw }}-perl
+    - name: checkout fuzz/corpora submodule
+      run: git submodule update --init --depth 1 fuzz/corpora
     - name: prepare the build directory
       run: mkdir _build
     - name: config
