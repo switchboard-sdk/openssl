@@ -66,56 +66,9 @@ jobs:
         path: openssl-windows-${{ matrix.platform.arch }}.zip
         retention-days: 30
 
-  windows-mingw:
-    strategy:
-      matrix:
-        platform:
-          - arch: x64
-            mingw: mingw64
-            target: mingw64
-          - arch: x86
-            mingw: mingw32
-            target: mingw
-    runs-on: windows-2022
-    steps:
-    - uses: actions/checkout@v4
-    - name: Setup Visual Studio Environment
-      uses: ilammy/msvc-dev-cmd@v1
-      with:
-        arch: ${{ matrix.platform.arch }}
-    - name: Install Perl (for OpenSSL)
-      run: |
-        choco install strawberryperl
-    - name: checkout fuzz/corpora submodule
-      run: git submodule update --init --depth 1 fuzz/corpora
-    - name: prepare the build directory
-      run: mkdir _build
-    - name: config
-      working-directory: _build
-      run: |
-        ../Configure ${{ matrix.platform.target }} --banner=Configured --strict-warnings --prefix="${{ github.workspace }}/openssl-install/${{ matrix.platform.arch }}" -std=gnu17 no-shared enable-fips
-        perl configdata.pm --dump
-    - name: build
-      working-directory: _build
-      run: nmake
-    - name: test
-      working-directory: _build
-      run: nmake test HARNESS_JOBS=4
-    - name: install
-      working-directory: _build
-      run: nmake install
-    - name: package artifacts
-      run: |
-        7z a openssl-windows-mingw-${{ matrix.platform.arch }}.zip "${{ github.workspace }}/openssl-install/${{ matrix.platform.arch }}/*"
-    - name: upload artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: openssl-windows-mingw-${{ matrix.platform.arch }}
-        path: openssl-windows-mingw-${{ matrix.platform.arch }}.zip
-        retention-days: 30
 
   windows-combine:
-    needs: [windows-build, windows-mingw]
+    needs: [windows-build]
     runs-on: windows-2022
     steps:
     - name: download all artifacts
